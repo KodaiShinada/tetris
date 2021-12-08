@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import { useState } from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -33,11 +34,6 @@ const Board_under = styled.div`
   height: 81vh;
   width: 81vh;
   background: red;
-  display: flex;
-  flex: 0em;
-  flex-wrap: wrap;
-  flex-basis: 0px;
-  gap: 0px;
 `
 
 const Box = styled.div`
@@ -47,10 +43,28 @@ const Box = styled.div`
   border: 1px solid;
   border-color: black;
   border-left: transparent;
-  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
 `
 
 const Home: NextPage = () => {
+  // prettier-ignore
+  const [board, setBoard] = useState([
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9],
+    [9, 9, 9, 9, 9, 9, 9, 9, 9]
+  ])
+  const onClick = (x: number, y: number) => {
+    const newBoard: number[][] = JSON.parse(JSON.stringify(board))
+    newBoard[y][x] = 1
+    setBoard(newBoard)
+  }
   return (
     <Container>
       <Board>
@@ -58,18 +72,13 @@ const Home: NextPage = () => {
           <Face></Face>
         </Board_up>
         <Board_under>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
-          <Box></Box>
+          {board.map((row, y) =>
+            row.map((num, x) => (
+              <Box key={`${x}-${y}`} onClick={() => onClick(x, y)}>
+                {num < 9 && num}
+              </Box>
+            ))
+          )}
         </Board_under>
       </Board>
     </Container>
