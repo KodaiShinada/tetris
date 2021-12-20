@@ -5,7 +5,7 @@ const FONT_COLORS = ['blue', 'green', 'red', 'purple', 'brown', 'yellow', 'orang
 
 const Container = styled.div`
   height: 100vh;
-  background: lime;
+  background: royalblue;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,7 +18,7 @@ const Board = styled.div`
 const BoardUp = styled.div`
   height: 19vh;
   width: 81vh;
-  background: blue;
+  background: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -65,8 +65,8 @@ const BombBlock = styled.div`
   display: inline-block;
   vertical-align: bottom;
   text-align: center;
-  line-height: 8.5vh;
-  font-size: 30px;
+  line-height: 7vh;
+  font-size: 50px;
   font-weight: bold;
 `
 
@@ -83,7 +83,18 @@ const Home: NextPage = () => {
     [9, 9, 9, 9, 9, 9, 9, 9, 9],
     [9, 9, 9, 9, 9, 9, 9, 9, 9]
   ])
-  const [bombs, setBombs] = useState([{ x: 0, y: 0 }])
+  const [bombs, setBombs] = useState([
+    { x: 4, y: 4 },
+    { x: 5, y: 5 },
+    { x: 6, y: 6 },
+    { x: 6, y: 7 },
+    { x: 6, y: 8 },
+    { x: 7, y: 6 },
+    { x: 7, y: 8 },
+    { x: 8, y: 6 },
+    { x: 8, y: 7 },
+    { x: 8, y: 8 },
+  ])
   const onClick = (x: number, y: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     //newBoard[y][x] = 1
@@ -93,7 +104,19 @@ const Home: NextPage = () => {
         existBomb = true
       }
     }
-    newBoard[y][x] = existBomb ? 10 : 1
+
+    let num = 0
+    const compareList: number[] = [-1, 0, 1]
+    for (let i = 0; i < bombs.length; i++) {
+      for (const compareY of compareList) {
+        for (const compareX of compareList) {
+          if (bombs[i].x === x + compareX && bombs[i].y === y + compareY) {
+            num++
+          }
+        }
+      }
+    }
+    newBoard[y][x] = existBomb ? 10 : num
     setBoard(newBoard)
   }
 
