@@ -83,18 +83,18 @@ const Home: NextPage = () => {
     [9, 9, 9, 9, 9, 9, 9, 9, 9],
     [9, 9, 9, 9, 9, 9, 9, 9, 9]
   ])
-  const [bombs, setBombs] = useState([
-    { x: 4, y: 4 },
-    { x: 5, y: 5 },
-    { x: 6, y: 6 },
-    { x: 6, y: 7 },
-    { x: 6, y: 8 },
-    { x: 7, y: 6 },
-    { x: 7, y: 8 },
-    { x: 8, y: 6 },
-    { x: 8, y: 7 },
-    { x: 8, y: 8 },
-  ])
+  const tmpBombs: { x: number; y: number }[] = []
+  //10個重複なし
+  while (tmpBombs.length < 10) {
+    const a = Math.floor(Math.random() * 9)
+    const b = Math.floor(Math.random() * 9)
+    if (!tmpBombs.some((bomb) => bomb.x === a && bomb.y === b)) {
+      tmpBombs.push({ x: a, y: b })
+    } else {
+      console.log(0)
+    }
+  }
+  const [bombs, setBombs] = useState(tmpBombs)
   const onClick = (x: number, y: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     //newBoard[y][x] = 1
