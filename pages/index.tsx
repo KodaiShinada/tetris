@@ -69,6 +69,140 @@ const BombBlock = styled.div`
   font-size: 50px;
   font-weight: bold;
 `
+const Colors = (props: { numColor: number }) => {
+  switch (props.numColor) {
+    case 1:
+      return <OneImg />
+    case 2:
+      return <TwoImg />
+    case 3:
+      return <ThreeImg />
+    case 4:
+      return <FourImg />
+    case 5:
+      return <FiveImg />
+    case 6:
+      return <SixImg />
+    case 7:
+      return <SevenImg />
+    case 8:
+      return <EightImg />
+    default:
+      return null
+  }
+}
+
+const OneImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: 0px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
+const TwoImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -30px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
+const ThreeImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -60px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
+const FourImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -90px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
+const FiveImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -120px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
+const SixImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -150px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
+const SevenImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -180px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
+const EightImg = styled.div`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -210px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
 
 const Home: NextPage = () => {
   // prettier-ignore
@@ -90,8 +224,6 @@ const Home: NextPage = () => {
     const b = Math.floor(Math.random() * 9)
     if (!tmpBombs.some((bomb) => bomb.x === a && bomb.y === b)) {
       tmpBombs.push({ x: a, y: b })
-    } else {
-      console.log(0)
     }
   }
   const [bombs, setBombs] = useState(tmpBombs)
@@ -138,7 +270,7 @@ const Home: NextPage = () => {
                   numColor={num}
                   onClick={() => onClick(x, y)}
                 >
-                  {0 < num && num < 9 && num}
+                  <Colors numColor={num} />
                 </Box>
               )
             )
