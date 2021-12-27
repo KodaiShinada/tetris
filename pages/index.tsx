@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
 import { useState } from 'react'
 import styled from 'styled-components'
-const FONT_COLORS = ['blue', 'green', 'red', 'purple', 'brown', 'yellow', 'orange', 'pink']
 
 const Container = styled.div`
   height: 100vh;
@@ -34,15 +33,14 @@ const Face = styled.div`
 const BoardUnder = styled.div`
   height: 81vh;
   width: 81vh;
-  background: red;
+  background: white;
 `
 
-const Box = styled.div<{ isOpen: boolean; numColor: number }>`
+const Box = styled.div<{ isOpen: boolean; numColor?: number }>`
   height: 9vh;
   width: 9vh;
   background: ${(props) => (props.isOpen ? 'white' : 'gray')};
-  color: ${(props) =>
-    0 < props.numColor && props.numColor <= 9 ? FONT_COLORS[props.numColor - 1] : 'black'};
+  color: 'black';
   border: 1px solid;
   border-color: black;
   border-left: transparent;
@@ -55,19 +53,17 @@ const Box = styled.div<{ isOpen: boolean; numColor: number }>`
 `
 
 const BombBlock = styled.div`
-  height: 9vh;
-  width: 9vh;
-  color: red;
-  background: white;
-  border: 1px solid;
-  border-color: black;
-  border-left: transparent;
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: -300px 0px;
+  background-repeat: no-repeat;
   display: inline-block;
-  vertical-align: bottom;
   text-align: center;
-  line-height: 7vh;
-  font-size: 50px;
-  font-weight: bold;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
 `
 const Colors = (props: { numColor: number }) => {
   switch (props.numColor) {
@@ -262,14 +258,11 @@ const Home: NextPage = () => {
           {board.map((row, y) =>
             row.map((num, x) =>
               num === 10 ? (
-                <BombBlock key={`${x}-${y}`}>●</BombBlock>
+                <Box isOpen={true} key={`${x}-${y}`}>
+                  <BombBlock />
+                </Box>
               ) : (
-                <Box
-                  key={`${x}-${y}`}
-                  isOpen={num < 9}
-                  numColor={num}
-                  onClick={() => onClick(x, y)}
-                >
+                <Box key={`${x}-${y}`} isOpen={num < 9} onClick={() => onClick(x, y)}>
                   <Colors numColor={num} />
                 </Box>
               )
