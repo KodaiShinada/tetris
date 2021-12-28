@@ -24,10 +24,18 @@ const BoardUp = styled.div`
 `
 
 const Face = styled.div`
-  height: 15vh;
-  width: 15vh;
-  background: yellow;
-  border-radius: 50%;
+  height: 90px;
+  width: 90px;
+  background-image: url(/img.png);
+  background-size: cover;
+  background-position: -990px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
 `
 
 const BoardUnder = styled.div`
@@ -36,7 +44,7 @@ const BoardUnder = styled.div`
   background: white;
 `
 
-const Box = styled.div<{ isOpen: boolean; numColor?: number }>`
+const Box = styled.div<{ isOpen: boolean }>`
   height: 9vh;
   width: 9vh;
   background: ${(props) => (props.isOpen ? 'white' : 'gray')};
@@ -65,132 +73,12 @@ const BombBlock = styled.div`
   text-indent: 100%;
   overflow: hidden;
 `
-const Colors = (props: { numColor: number }) => {
-  switch (props.numColor) {
-    case 1:
-      return <OneImg />
-    case 2:
-      return <TwoImg />
-    case 3:
-      return <ThreeImg />
-    case 4:
-      return <FourImg />
-    case 5:
-      return <FiveImg />
-    case 6:
-      return <SixImg />
-    case 7:
-      return <SevenImg />
-    case 8:
-      return <EightImg />
-    default:
-      return null
-  }
-}
 
-const OneImg = styled.div`
+const Colors = styled.div<{ numColor: number }>`
   height: 30px;
   width: 30px;
   background-image: url(/img.png);
-  background-position: 0px 0px;
-  background-repeat: no-repeat;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  white-space: nowrap;
-  text-indent: 100%;
-  overflow: hidden;
-`
-
-const TwoImg = styled.div`
-  height: 30px;
-  width: 30px;
-  background-image: url(/img.png);
-  background-position: -30px 0px;
-  background-repeat: no-repeat;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  white-space: nowrap;
-  text-indent: 100%;
-  overflow: hidden;
-`
-
-const ThreeImg = styled.div`
-  height: 30px;
-  width: 30px;
-  background-image: url(/img.png);
-  background-position: -60px 0px;
-  background-repeat: no-repeat;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  white-space: nowrap;
-  text-indent: 100%;
-  overflow: hidden;
-`
-
-const FourImg = styled.div`
-  height: 30px;
-  width: 30px;
-  background-image: url(/img.png);
-  background-position: -90px 0px;
-  background-repeat: no-repeat;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  white-space: nowrap;
-  text-indent: 100%;
-  overflow: hidden;
-`
-
-const FiveImg = styled.div`
-  height: 30px;
-  width: 30px;
-  background-image: url(/img.png);
-  background-position: -120px 0px;
-  background-repeat: no-repeat;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  white-space: nowrap;
-  text-indent: 100%;
-  overflow: hidden;
-`
-
-const SixImg = styled.div`
-  height: 30px;
-  width: 30px;
-  background-image: url(/img.png);
-  background-position: -150px 0px;
-  background-repeat: no-repeat;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  white-space: nowrap;
-  text-indent: 100%;
-  overflow: hidden;
-`
-
-const SevenImg = styled.div`
-  height: 30px;
-  width: 30px;
-  background-image: url(/img.png);
-  background-position: -180px 0px;
-  background-repeat: no-repeat;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  white-space: nowrap;
-  text-indent: 100%;
-  overflow: hidden;
-`
-
-const EightImg = styled.div`
-  height: 30px;
-  width: 30px;
-  background-image: url(/img.png);
-  background-position: -210px 0px;
+  background-position: ${(props) => (props.numColor - 1) * -30}px 0px;
   background-repeat: no-repeat;
   display: inline-block;
   text-align: center;
@@ -252,7 +140,7 @@ const Home: NextPage = () => {
     <Container>
       <Board>
         <BoardUp>
-          <Face></Face>
+          <Face />
         </BoardUp>
         <BoardUnder>
           {board.map((row, y) =>
@@ -263,7 +151,7 @@ const Home: NextPage = () => {
                 </Box>
               ) : (
                 <Box key={`${x}-${y}`} isOpen={num < 9} onClick={() => onClick(x, y)}>
-                  <Colors numColor={num} />
+                  {num !== 9 && <Colors numColor={num} />}
                 </Box>
               )
             )
