@@ -102,8 +102,9 @@ const Home: NextPage = () => {
     [9, 9, 9, 9, 9, 9, 9, 9, 9]
   ])
   const tmpBombs: { x: number; y: number }[] = []
-  //10個重複なし
-  while (tmpBombs.length < 10) {
+  //爆弾数
+  const numberOfBombs = 10
+  while (tmpBombs.length < numberOfBombs) {
     const a = Math.floor(Math.random() * 9)
     const b = Math.floor(Math.random() * 9)
     if (!tmpBombs.some((bomb) => bomb.x === a && bomb.y === b)) {
@@ -113,6 +114,10 @@ const Home: NextPage = () => {
   const [bombs, setBombs] = useState(tmpBombs)
   const onClick = (x: number, y: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
+    setBoard(chain(x, y, newBoard))
+  }
+  const chain = (x: number, y: number, board: number[][]) => {
+    let newBoard: number[][] = board
     //newBoard[y][x] = 1
     let existBomb = false
     for (let i = 0; i < bombs.length; i++) {
@@ -133,7 +138,25 @@ const Home: NextPage = () => {
       }
     }
     newBoard[y][x] = existBomb ? 10 : num
-    setBoard(newBoard)
+    if (num === 0) {
+      console.log(0)
+      for (let i = 0; i < bombs.length; i++) {
+        for (const boardY of compareList) {
+          for (const boardX of compareList) {
+            if (
+              //Math.abs(boardY + boardX) === 1 &&
+              newBoard[y + boardY] !== undefined &&
+              newBoard[x + boardX] !== undefined &&
+              newBoard[y + boardY][x + boardX] === 9 &&
+              !(bombs[i].x === x + boardX && bombs[i].y === y + boardY)
+            ) {
+              newBoard = chain(x + boardX, y + boardY, newBoard)
+            }
+          }
+        }
+      }
+    }
+    return newBoard
   }
 
   return (
