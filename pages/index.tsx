@@ -11,16 +11,27 @@ const Container = styled.div`
 `
 
 const Board = styled.div`
+  height: 95vh;
+  width: 80vh;
+  background: black;
   display: row;
+  position: relative;
+`
+const GameWrapper = styled.div`
+  background: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
 `
 
 const BoardUp = styled.div`
-  height: 19vh;
-  width: 81vh;
+  height: 17vh;
+  width: 72vh;
   background: white;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
 `
 
 const Face = styled.div`
@@ -36,21 +47,27 @@ const Face = styled.div`
   white-space: nowrap;
   text-indent: 100%;
   overflow: hidden;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
 `
 
 const BoardUnder = styled.div`
-  height: 81vh;
-  width: 81vh;
+  height: 72vh;
+  width: 72vh;
   background: white;
 `
 
 const Box = styled.div<{ isOpen: boolean }>`
-  height: 9vh;
-  width: 9vh;
+  height: 8vh;
+  width: 8vh;
   background: ${(props) => (props.isOpen ? 'white' : 'gray')};
   color: 'black';
-  border: 1px solid;
-  border-color: black;
+  border: 1px solid black;
+  box-sizing: border-box;
   border-left: transparent;
   display: inline-block;
   vertical-align: bottom;
@@ -88,6 +105,20 @@ const Colors = styled.div<{ numColor: number }>`
   overflow: hidden;
 `
 
+const Flags = styled.div<{ numColor: number }>`
+  height: 30px;
+  width: 30px;
+  background-image: url(/img.png);
+  background-position: ${(props) => (props.numColor - 3) * -30}px 0px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  text-indent: 100%;
+  overflow: hidden;
+`
+
 const Home: NextPage = () => {
   // prettier-ignore
   const [board, setBoard] = useState([
@@ -114,7 +145,7 @@ const Home: NextPage = () => {
   const [bombs, setBombs] = useState(tmpBombs)
   const onClick = (x: number, y: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
-    setBoard(chain(x, y, newBoard))
+    if (newBoard[y][x] === 9) setBoard(chain(x, y, newBoard))
   }
   const chain = (x: number, y: number, board: number[][]) => {
     let newBoard: number[][] = board
@@ -139,12 +170,11 @@ const Home: NextPage = () => {
     }
     newBoard[y][x] = existBomb ? 10 : num
     if (num === 0) {
-      console.log(0)
+      //console.log(0)
       for (let i = 0; i < bombs.length; i++) {
         for (const boardY of compareList) {
           for (const boardX of compareList) {
             if (
-              //Math.abs(boardY + boardX) === 1 &&
               newBoard[y + boardY] !== undefined &&
               newBoard[x + boardX] !== undefined &&
               newBoard[y + boardY][x + boardX] === 9 &&
@@ -159,27 +189,47 @@ const Home: NextPage = () => {
     return newBoard
   }
 
+  const flag = (x: number, y: number, e: React.MouseEvent) => {
+    const newBoard: number[][] = JSON.parse(JSON.stringify(board))
+    if (newBoard[y][x] === 9) {
+      newBoard[y][x] = 12
+    } else if (newBoard[y][x] === 12) {
+      newBoard[y][x] = 11
+    } else if (newBoard[y][x] === 11) {
+      newBoard[y][x] = 9
+    }
+    e.preventDefault()
+    setBoard(newBoard)
+  }
+
   return (
     <Container>
       <Board>
-        <BoardUp>
-          <Face />
-        </BoardUp>
-        <BoardUnder>
-          {board.map((row, y) =>
-            row.map((num, x) =>
-              num === 10 ? (
-                <Box isOpen={true} key={`${x}-${y}`}>
-                  <BombBlock />
-                </Box>
-              ) : (
-                <Box key={`${x}-${y}`} isOpen={num < 9} onClick={() => onClick(x, y)}>
-                  {num !== 9 && <Colors numColor={num} />}
-                </Box>
+        <GameWrapper>
+          <BoardUp>
+            <Face />
+          </BoardUp>
+          <BoardUnder>
+            {board.map((row, y) =>
+              row.map((num, x) =>
+                num === 10 ? (
+                  <Box isOpen={true} key={`${x}-${y}`}>
+                    <BombBlock />
+                  </Box>
+                ) : (
+                  <Box
+                    key={`${x}-${y}`}
+                    isOpen={num < 9}
+                    onClick={() => onClick(x, y)}
+                    onContextMenu={(e) => flag(x, y, e)}
+                  >
+                    {num < 9 ? <Colors numColor={num} /> : num !== 9 && <Flags numColor={num} />}
+                  </Box>
+                )
               )
-            )
-          )}
-        </BoardUnder>
+            )}
+          </BoardUnder>
+        </GameWrapper>
       </Board>
     </Container>
   )
