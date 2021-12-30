@@ -145,30 +145,21 @@ const Home: NextPage = () => {
   const [bombs, setBombs] = useState(tmpBombs)
   const onClick = (x: number, y: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
-    if (newBoard[y][x] === 9) setBoard(chain(x, y, newBoard))
+    if (newBoard[y][x] === 9) setBoard(open(x, y, newBoard))
+    console.log(open(x, y, newBoard))
   }
-  const chain = (x: number, y: number, board: number[][]) => {
-    let newBoard: number[][] = board
+
+  const open = (x: number, y: number, newBoard: number[][]) => {
     //newBoard[y][x] = 1
-    let existBomb = false
     for (let i = 0; i < bombs.length; i++) {
       if (bombs[i].x === x && bombs[i].y === y) {
-        existBomb = true
+        return gameOver(x, y, newBoard)
       }
     }
 
-    let num = 0
+    const num = compare(x, y)
+    newBoard[y][x] = num
     const compareList: number[] = [-1, 0, 1]
-    for (let i = 0; i < bombs.length; i++) {
-      for (const compareY of compareList) {
-        for (const compareX of compareList) {
-          if (bombs[i].x === x + compareX && bombs[i].y === y + compareY) {
-            num++
-          }
-        }
-      }
-    }
-    newBoard[y][x] = existBomb ? 10 : num
     if (num === 0) {
       //console.log(0)
       for (let i = 0; i < bombs.length; i++) {
@@ -180,13 +171,33 @@ const Home: NextPage = () => {
               newBoard[y + boardY][x + boardX] === 9 &&
               !(bombs[i].x === x + boardX && bombs[i].y === y + boardY)
             ) {
-              newBoard = chain(x + boardX, y + boardY, newBoard)
+              newBoard = open(x + boardX, y + boardY, newBoard)
             }
           }
         }
       }
     }
     return newBoard
+  }
+
+  const compare = (x: number, y: number) => {
+    for (let i = 0; i < bombs.length; i++) {
+      if (bombs[i].x === x && bombs[i].y === y) {
+        return 10
+      }
+    }
+    let num = 0
+    const compareList: number[] = [-1, 0, 1]
+    for (let i = 0; i < bombs.length; i++) {
+      for (const compareY of compareList) {
+        for (const compareX of compareList) {
+          if (bombs[i].x === x + compareX && bombs[i].y === y + compareY) {
+            num++
+          }
+        }
+      }
+    }
+    return num
   }
 
   const flag = (x: number, y: number, e: React.MouseEvent) => {
@@ -200,6 +211,17 @@ const Home: NextPage = () => {
     }
     e.preventDefault()
     setBoard(newBoard)
+  }
+
+  const gameOver = (x: number, y: number, newBoard: number[][]) => {
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        //console.log(i, j)
+        newBoard[i][j] = compare(i, j)
+      }
+    }
+    //newBoard[y][x] = 10
+    return newBoard
   }
 
   return (
