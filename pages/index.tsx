@@ -34,12 +34,13 @@ const BoardUp = styled.div`
   position: relative;
 `
 
-const Face = styled.div`
+const Face = styled.div<{ faceState: number }>`
   height: 90px;
   width: 90px;
   background-image: url(/img.png);
   background-size: cover;
-  background-position: -990px 0px;
+  //background-position: -990px 0px;
+  background-position: ${(props) => (props.faceState + 11) * -90}px 0px;
   background-repeat: no-repeat;
   display: inline-block;
   text-align: center;
@@ -144,6 +145,7 @@ const Home: NextPage = () => {
   }
   const [bombs, setBombs] = useState(tmpBombs)
   console.log(bombs)
+  const [face, setFace] = useState(0)
   const onClick = (y: number, x: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     if (newBoard[y][x] === 9) setBoard(open(y, x, newBoard))
@@ -203,6 +205,7 @@ const Home: NextPage = () => {
   }
 
   const gameOver = (x: number, y: number, newBoard: number[][]) => {
+    setFace(2)
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         //console.log(i, j)
@@ -231,7 +234,7 @@ const Home: NextPage = () => {
       <Board>
         <GameWrapper>
           <BoardUp>
-            <Face />
+            <Face faceState={face} />
           </BoardUp>
           <BoardUnder>
             {board.map((row, y) =>
