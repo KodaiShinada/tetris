@@ -132,32 +132,34 @@ const Home: NextPage = () => {
     [9, 9, 9, 9, 9, 9, 9, 9, 9],
     [9, 9, 9, 9, 9, 9, 9, 9, 9]
   ])
-  const tmpBombs: { x: number; y: number }[] = []
+  const tmpBombs: { y: number; x: number }[] = []
   //爆弾数
   const numberOfBombs = 10
   while (tmpBombs.length < numberOfBombs) {
     const a = Math.floor(Math.random() * 9)
     const b = Math.floor(Math.random() * 9)
     if (!tmpBombs.some((bomb) => bomb.x === a && bomb.y === b)) {
-      tmpBombs.push({ x: a, y: b })
+      tmpBombs.push({ y: a, x: b })
     }
   }
   const [bombs, setBombs] = useState(tmpBombs)
-  const onClick = (x: number, y: number) => {
+  console.log(bombs)
+  const onClick = (y: number, x: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
-    if (newBoard[y][x] === 9) setBoard(open(x, y, newBoard))
-    console.log(open(x, y, newBoard))
+    if (newBoard[y][x] === 9) setBoard(open(y, x, newBoard))
+    //console.log(open(x, y, newBoard))
   }
 
-  const open = (x: number, y: number, newBoard: number[][]) => {
+  const open = (y: number, x: number, newBoard: number[][]) => {
     //newBoard[y][x] = 1
     for (let i = 0; i < bombs.length; i++) {
       if (bombs[i].x === x && bombs[i].y === y) {
-        return gameOver(x, y, newBoard)
+        newBoard[y][x] = 10
+        return gameOver(y, x, newBoard)
       }
     }
 
-    const num = compare(x, y)
+    const num = compare(y, x)
     newBoard[y][x] = num
     const compareList: number[] = [-1, 0, 1]
     if (num === 0) {
@@ -171,7 +173,7 @@ const Home: NextPage = () => {
               newBoard[y + boardY][x + boardX] === 9 &&
               !(bombs[i].x === x + boardX && bombs[i].y === y + boardY)
             ) {
-              newBoard = open(x + boardX, y + boardY, newBoard)
+              newBoard = open(y + boardY, x + boardX, newBoard)
             }
           }
         }
@@ -180,7 +182,7 @@ const Home: NextPage = () => {
     return newBoard
   }
 
-  const compare = (x: number, y: number) => {
+  const compare = (y: number, x: number) => {
     for (let i = 0; i < bombs.length; i++) {
       if (bombs[i].x === x && bombs[i].y === y) {
         return 10
@@ -200,7 +202,18 @@ const Home: NextPage = () => {
     return num
   }
 
-  const flag = (x: number, y: number, e: React.MouseEvent) => {
+  const gameOver = (x: number, y: number, newBoard: number[][]) => {
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        //console.log(i, j)
+        newBoard[i][j] = compare(i, j)
+      }
+    }
+    //newBoard[y][x] = 10
+    return newBoard
+  }
+
+  const flag = (y: number, x: number, e: React.MouseEvent) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     if (newBoard[y][x] === 9) {
       newBoard[y][x] = 12
@@ -211,17 +224,6 @@ const Home: NextPage = () => {
     }
     e.preventDefault()
     setBoard(newBoard)
-  }
-
-  const gameOver = (x: number, y: number, newBoard: number[][]) => {
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        //console.log(i, j)
-        newBoard[i][j] = compare(i, j)
-      }
-    }
-    //newBoard[y][x] = 10
-    return newBoard
   }
 
   return (
@@ -242,8 +244,8 @@ const Home: NextPage = () => {
                   <Box
                     key={`${x}-${y}`}
                     isOpen={num < 9}
-                    onClick={() => onClick(x, y)}
-                    onContextMenu={(e) => flag(x, y, e)}
+                    onClick={() => onClick(y, x)}
+                    onContextMenu={(e) => flag(y, x, e)}
                   >
                     {num < 9 ? <Colors numColor={num} /> : num !== 9 && <Flags numColor={num} />}
                   </Box>
