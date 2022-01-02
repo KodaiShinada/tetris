@@ -62,10 +62,10 @@ const BoardUnder = styled.div`
   background: white;
 `
 
-const Box = styled.div<{ isOpen: boolean }>`
+const Box = styled.div<{ backColor: string }>`
   height: 8vh;
   width: 8vh;
-  background: ${(props) => (props.isOpen ? 'white' : 'gray')};
+  background: ${(props) => props.backColor};
   color: 'black';
   border: 1px solid black;
   box-sizing: border-box;
@@ -110,7 +110,7 @@ const Flags = styled.div<{ numColor: number }>`
   height: 30px;
   width: 30px;
   background-image: url(/img.png);
-  background-position: ${(props) => (props.numColor - 3) * -30}px 0px;
+  background-position: ${(props) => (props.numColor - 4) * -30}px 0px;
   background-repeat: no-repeat;
   display: inline-block;
   text-align: center;
@@ -139,13 +139,14 @@ const Home: NextPage = () => {
   while (tmpBombs.length < numberOfBombs) {
     const a = Math.floor(Math.random() * 9)
     const b = Math.floor(Math.random() * 9)
-    if (!tmpBombs.some((bomb) => bomb.x === a && bomb.y === b)) {
+    if (!tmpBombs.some((bomb) => bomb.y === a && bomb.x === b)) {
       tmpBombs.push({ y: a, x: b })
     }
   }
   const [bombs, setBombs] = useState(tmpBombs)
   console.log(bombs)
   const [face, setFace] = useState(0)
+
   const onClick = (y: number, x: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     if (newBoard[y][x] === 9) setBoard(open(y, x, newBoard))
@@ -204,25 +205,23 @@ const Home: NextPage = () => {
     return num
   }
 
-  const gameOver = (x: number, y: number, newBoard: number[][]) => {
+  const gameOver = (y: number, x: number, newBoard: number[][]) => {
     setFace(2)
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        //console.log(i, j)
-        newBoard[i][j] = compare(i, j)
-      }
+    for (let i = 0; i < bombs.length; i++) {
+      //console.log(i, j)
+      newBoard[bombs[i].y][bombs[i].x] = compare(bombs[i].y, bombs[i].x)
     }
-    //newBoard[y][x] = 10
+    newBoard[y][x] = 11
     return newBoard
   }
 
   const flag = (y: number, x: number, e: React.MouseEvent) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     if (newBoard[y][x] === 9) {
+      newBoard[y][x] = 13
+    } else if (newBoard[y][x] === 13) {
       newBoard[y][x] = 12
     } else if (newBoard[y][x] === 12) {
-      newBoard[y][x] = 11
-    } else if (newBoard[y][x] === 11) {
       newBoard[y][x] = 9
     }
     e.preventDefault()
@@ -239,14 +238,14 @@ const Home: NextPage = () => {
           <BoardUnder>
             {board.map((row, y) =>
               row.map((num, x) =>
-                num === 10 ? (
-                  <Box isOpen={true} key={`${x}-${y}`}>
+                num === 10 || num === 11 ? (
+                  <Box backColor={num === 10 ? 'white' : 'red'} key={`${x}-${y}`}>
                     <BombBlock />
                   </Box>
                 ) : (
                   <Box
                     key={`${x}-${y}`}
-                    isOpen={num < 9}
+                    backColor={num < 9 ? 'white' : 'gray'}
                     onClick={() => onClick(y, x)}
                     onContextMenu={(e) => flag(y, x, e)}
                   >
