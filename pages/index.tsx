@@ -205,6 +205,16 @@ const Home: NextPage = () => {
     return num
   }
 
+  const gameClear = (y: number, x: number, newBoard: number[][]) => {
+    setFace(1)
+    for (let i = 0; i < bombs.length; i++) {
+      //console.log(i, j)
+      newBoard[bombs[i].y][bombs[i].x] = compare(bombs[i].y, bombs[i].x)
+    }
+    newBoard[y][x] = 11
+    return newBoard
+  }
+
   const gameOver = (y: number, x: number, newBoard: number[][]) => {
     setFace(2)
     for (let i = 0; i < bombs.length; i++) {
