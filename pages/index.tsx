@@ -43,8 +43,6 @@ const Face = styled.div<{ faceState: number }>`
   background-position: ${(props) => (props.faceState + 11) * -90}px 0px;
   background-repeat: no-repeat;
   display: inline-block;
-  text-align: center;
-  vertical-align: center;
   white-space: nowrap;
   text-indent: 100%;
   overflow: hidden;
@@ -54,6 +52,42 @@ const Face = styled.div<{ faceState: number }>`
   left: 0;
   right: 0;
   margin: auto;
+`
+
+const CounterLWrapper = styled.div`
+  height: 90px;
+  width: 150px;
+  display: flex;
+  position: relative;
+  text-align: center;
+  left: -20px;
+  margin: auto;
+`
+
+const CounterRWrapper = styled.div`
+  height: 90px;
+  width: 150px;
+  background: black;
+  display: flex;
+  position: relative;
+  right: -20px;
+  margin: auto;
+`
+
+const Counter = styled.div`
+  height: 90px;
+  width: 50px;
+  position: relative;
+  background: black;
+`
+
+const Count = styled.div`
+  height: 90px;
+  width: 50px;
+  color: red;
+  position: relative;
+  font-size: 90px;
+  top: -17px;
 `
 
 const BoardUnder = styled.div`
@@ -144,17 +178,27 @@ const Home: NextPage = () => {
     }
   }
   const [bombs, setBombs] = useState(tmpBombs)
-  console.log(bombs)
+  //console.log(bombs)
+  const [bombCount, setBombCount] = useState(numberOfBombs)
+
   const [face, setFace] = useState(0)
 
   const onClick = (y: number, x: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
-    if (newBoard[y][x] === 9) setBoard(open(y, x, newBoard))
-    //console.log(open(x, y, newBoard))
+    if (newBoard[y][x] === 9) {
+      const result: number[][] = open(y, x, newBoard)
+      setBoard(result)
+      let count = 81 - numberOfBombs
+      for (let i = 0; i < 9; i++) {
+        count -= result[i].filter(function (a: number) {
+          return a < 9
+        }).length
+      }
+      if (count === 0) gameClear()
+    }
   }
 
   const open = (y: number, x: number, newBoard: number[][]) => {
-    //newBoard[y][x] = 1
     for (let i = 0; i < bombs.length; i++) {
       if (bombs[i].x === x && bombs[i].y === y) {
         newBoard[y][x] = 10
@@ -205,14 +249,9 @@ const Home: NextPage = () => {
     return num
   }
 
-  const gameClear = (y: number, x: number, newBoard: number[][]) => {
+  const gameClear = () => {
     setFace(1)
-    for (let i = 0; i < bombs.length; i++) {
-      //console.log(i, j)
-      newBoard[bombs[i].y][bombs[i].x] = compare(bombs[i].y, bombs[i].x)
-    }
-    newBoard[y][x] = 11
-    return newBoard
+    setBombCount(0)
   }
 
   const gameOver = (y: number, x: number, newBoard: number[][]) => {
@@ -234,6 +273,15 @@ const Home: NextPage = () => {
     } else if (newBoard[y][x] === 12) {
       newBoard[y][x] = 9
     }
+    let count = 0
+    for (let i = 0; i < 9; i++) {
+      count += newBoard[i].filter(function (b: number) {
+        return b === 13
+      }).length
+    }
+    setBombCount(numberOfBombs - count)
+    console.log(bombCount)
+
     e.preventDefault()
     setBoard(newBoard)
   }
@@ -243,7 +291,35 @@ const Home: NextPage = () => {
       <Board>
         <GameWrapper>
           <BoardUp>
+            <CounterLWrapper>
+              <Counter>
+                <Count>{bombCount < -9 ? '-' : 0}</Count>
+              </Counter>
+              <Counter>
+                <Count>
+                  {bombCount < -9
+                    ? Math.abs(bombCount - (bombCount % 10))
+                    : bombCount < 0
+                    ? '-'
+                    : bombCount - (bombCount % 10)}
+                </Count>
+              </Counter>
+              <Counter>
+                <Count>{bombCount < 0 ? Math.abs(bombCount % 10) : bombCount % 10}</Count>
+              </Counter>
+            </CounterLWrapper>
             <Face faceState={face} />
+            <CounterRWrapper>
+              <Counter>
+                <Count>1</Count>
+              </Counter>
+              <Counter>
+                <Count>1</Count>
+              </Counter>
+              <Counter>
+                <Count>1</Count>
+              </Counter>
+            </CounterRWrapper>
           </BoardUp>
           <BoardUnder>
             {board.map((row, y) =>
