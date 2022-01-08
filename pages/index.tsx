@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -167,41 +167,70 @@ const Home: NextPage = () => {
     [9, 9, 9, 9, 9, 9, 9, 9, 9],
     [9, 9, 9, 9, 9, 9, 9, 9, 9]
   ])
+  const [isPlaying, setIsPlaying] = useState(false)
   const tmpBombs: { y: number; x: number }[] = []
   //爆弾数
-  const numberOfBombs = 10
-  while (tmpBombs.length < numberOfBombs) {
-    const a = Math.floor(Math.random() * 9)
-    const b = Math.floor(Math.random() * 9)
-    if (!tmpBombs.some((bomb) => bomb.y === a && bomb.x === b)) {
-      tmpBombs.push({ y: a, x: b })
-    }
-  }
+  const numberOfBombs = 20
   const [bombs, setBombs] = useState(tmpBombs)
+  const [playable, setPlayable] = useState(true)
   //console.log(bombs)
   const [bombCount, setBombCount] = useState(numberOfBombs)
 
   const [face, setFace] = useState(0)
 
+  const [count, setCount] = useState(0)
+
+  const countup = () => {
+    setCount((count) => count + 1)
+  }
+
+  useEffect(() => {
+    if (isPlaying) {
+      const isPlayingId = setInterval(countup, 1000)
+      return () => clearInterval(isPlayingId)
+    }
+  }, [isPlaying])
+
   const onClick = (y: number, x: number) => {
+    if (!isPlaying && playable) {
+      setIsPlaying(true)
+      settingBombs(y, x)
+    } else if (isPlaying) {
+      update(y, x)
+    }
+  }
+
+  const update = (y: number, x: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     if (newBoard[y][x] === 9) {
       const result: number[][] = open(y, x, newBoard)
       setBoard(result)
-      let count = 81 - numberOfBombs
+      let BoxCount = 81 - numberOfBombs
       for (let i = 0; i < 9; i++) {
-        count -= result[i].filter(function (a: number) {
+        BoxCount -= result[i].filter(function (a: number) {
           return a < 9
         }).length
       }
-      if (count === 0) gameClear()
+      if (BoxCount === 0) gameClear()
     }
+  }
+
+  const settingBombs = (y2: number, x2: number) => {
+    const bombsList: { y: number; x: number }[] = []
+    while (bombsList.length < numberOfBombs) {
+      const a = Math.floor(Math.random() * 9)
+      const b = Math.floor(Math.random() * 9)
+      if (!bombsList.some((bomb) => bomb.y === a && bomb.x === b) && !(y2 === a && x2 === b)) {
+        bombsList.push({ y: a, x: b })
+      }
+    }
+    setBombs(bombsList)
+    update(y2, x2)
   }
 
   const open = (y: number, x: number, newBoard: number[][]) => {
     for (let i = 0; i < bombs.length; i++) {
       if (bombs[i].x === x && bombs[i].y === y) {
-        newBoard[y][x] = 10
         return gameOver(y, x, newBoard)
       }
     }
@@ -210,7 +239,6 @@ const Home: NextPage = () => {
     newBoard[y][x] = num
     const compareList: number[] = [-1, 0, 1]
     if (num === 0) {
-      //console.log(0)
       for (let i = 0; i < bombs.length; i++) {
         for (const boardY of compareList) {
           for (const boardX of compareList) {
@@ -250,12 +278,16 @@ const Home: NextPage = () => {
   }
 
   const gameClear = () => {
+    setIsPlaying(false)
     setFace(1)
     setBombCount(0)
+    setPlayable(false)
   }
 
   const gameOver = (y: number, x: number, newBoard: number[][]) => {
+    setIsPlaying(false)
     setFace(2)
+    setPlayable(false)
     for (let i = 0; i < bombs.length; i++) {
       //console.log(i, j)
       newBoard[bombs[i].y][bombs[i].x] = compare(bombs[i].y, bombs[i].x)
@@ -264,22 +296,39 @@ const Home: NextPage = () => {
     return newBoard
   }
 
+  const reset = () => {
+    setIsPlaying(false)
+    setCount(0)
+    setFace(0)
+    setBombCount(numberOfBombs)
+    setPlayable(true)
+    const newBoard: number[][] = JSON.parse(JSON.stringify(board))
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        newBoard[i][j] = 9
+      }
+    }
+    setBoard(newBoard)
+  }
+
   const flag = (y: number, x: number, e: React.MouseEvent) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
-    if (newBoard[y][x] === 9) {
-      newBoard[y][x] = 13
-    } else if (newBoard[y][x] === 13) {
-      newBoard[y][x] = 12
-    } else if (newBoard[y][x] === 12) {
-      newBoard[y][x] = 9
+    if (isPlaying) {
+      if (newBoard[y][x] === 9) {
+        newBoard[y][x] = 13
+      } else if (newBoard[y][x] === 13) {
+        newBoard[y][x] = 12
+      } else if (newBoard[y][x] === 12) {
+        newBoard[y][x] = 9
+      }
     }
-    let count = 0
+    let flagCount = 0
     for (let i = 0; i < 9; i++) {
-      count += newBoard[i].filter(function (b: number) {
+      flagCount += newBoard[i].filter(function (b: number) {
         return b === 13
       }).length
     }
-    setBombCount(numberOfBombs - count)
+    setBombCount(numberOfBombs - flagCount)
     console.log(bombCount)
 
     e.preventDefault()
@@ -308,16 +357,16 @@ const Home: NextPage = () => {
                 <Count>{bombCount < 0 ? Math.abs(bombCount % 10) : bombCount % 10}</Count>
               </Counter>
             </CounterLWrapper>
-            <Face faceState={face} />
+            <Face faceState={face} onClick={() => reset()} />
             <CounterRWrapper>
               <Counter>
-                <Count>1</Count>
+                <Count>{(count % 1000) - (count % 100)}</Count>
               </Counter>
               <Counter>
-                <Count>1</Count>
+                <Count>{(count % 100) - (count % 10)}</Count>
               </Counter>
               <Counter>
-                <Count>1</Count>
+                <Count>{count % 10}</Count>
               </Counter>
             </CounterRWrapper>
           </BoardUp>
