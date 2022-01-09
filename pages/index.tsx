@@ -215,17 +215,20 @@ const Home: NextPage = () => {
     }
   }
 
-  const settingBombs = (y2: number, x2: number) => {
+  const settingBombs = (clickedY: number, clickedX: number) => {
     const bombsList: { y: number; x: number }[] = []
     while (bombsList.length < numberOfBombs) {
       const a = Math.floor(Math.random() * 9)
       const b = Math.floor(Math.random() * 9)
-      if (!bombsList.some((bomb) => bomb.y === a && bomb.x === b) && !(y2 === a && x2 === b)) {
+      if (
+        !bombsList.some((bomb) => bomb.y === a && bomb.x === b) &&
+        !(clickedY === a && clickedX === b)
+      ) {
         bombsList.push({ y: a, x: b })
       }
     }
     setBombs(bombsList)
-    update(y2, x2)
+    update(clickedY, clickedX)
   }
 
   const open = (y: number, x: number, newBoard: number[][]) => {
