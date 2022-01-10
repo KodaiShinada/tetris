@@ -170,7 +170,7 @@ const Home: NextPage = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const tmpBombs: { y: number; x: number }[] = []
   //爆弾数
-  const numberOfBombs = 20
+  const numberOfBombs = 80
   const [bombs, setBombs] = useState(tmpBombs)
   const [playable, setPlayable] = useState(true)
   //console.log(bombs)
@@ -193,17 +193,29 @@ const Home: NextPage = () => {
 
   const onClick = (y: number, x: number) => {
     if (!isPlaying && playable) {
+      //console.log(y, x)
       setIsPlaying(true)
-      settingBombs(y, x)
+      const bombsList: { y: number; x: number }[] = []
+      while (bombsList.length < numberOfBombs) {
+        const a = Math.floor(Math.random() * 9)
+        const b = Math.floor(Math.random() * 9)
+        if (!bombsList.some((bomb) => bomb.y === a && bomb.x === b) && !(y === a && x === b)) {
+          bombsList.push({ y: a, x: b })
+        }
+      }
+      setBombs(bombsList)
+      console.log(bombs)
+      update(y, x, bombsList)
     } else if (isPlaying) {
-      update(y, x)
+      const bombsList: { y: number; x: number }[] = bombs
+      update(y, x, bombsList)
     }
   }
 
-  const update = (y: number, x: number) => {
+  const update = (y: number, x: number, bombsList: { y: number; x: number }[]) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     if (newBoard[y][x] === 9) {
-      const result: number[][] = open(y, x, newBoard)
+      const result: number[][] = open(y, x, newBoard, bombsList)
       setBoard(result)
       let BoxCount = 81 - numberOfBombs
       for (let i = 0; i < 9; i++) {
@@ -211,91 +223,64 @@ const Home: NextPage = () => {
           return a < 9
         }).length
       }
-      if (BoxCount === 0) gameClear()
+      //Game Clear
+      if (BoxCount === 0) {
+        setIsPlaying(false)
+        setFace(1)
+        setBombCount(0)
+        setPlayable(false)
+      }
     }
   }
 
-  const settingBombs = (clickedY: number, clickedX: number) => {
-    const bombsList: { y: number; x: number }[] = []
-    while (bombsList.length < numberOfBombs) {
-      const a = Math.floor(Math.random() * 9)
-      const b = Math.floor(Math.random() * 9)
-      if (
-        !bombsList.some((bomb) => bomb.y === a && bomb.x === b) &&
-        !(clickedY === a && clickedX === b)
-      ) {
-        bombsList.push({ y: a, x: b })
-      }
-    }
-    setBombs(bombsList)
-    update(clickedY, clickedX)
-  }
-
-  const open = (y: number, x: number, newBoard: number[][]) => {
-    for (let i = 0; i < bombs.length; i++) {
-      if (bombs[i].x === x && bombs[i].y === y) {
-        return gameOver(y, x, newBoard)
+  const open = (
+    y: number,
+    x: number,
+    newBoard: number[][],
+    bombsList: { y: number; x: number }[]
+  ) => {
+    //Game Over
+    for (let i = 0; i < bombsList.length; i++) {
+      if (bombsList[i].x === x && bombsList[i].y === y) {
+        setIsPlaying(false)
+        setFace(2)
+        setPlayable(false)
+        for (let i = 0; i < bombsList.length; i++) {
+          newBoard[bombsList[i].y][bombsList[i].x] = 10
+        }
+        newBoard[y][x] = 11
+        return newBoard
       }
     }
 
-    const num = compare(y, x)
-    newBoard[y][x] = num
+    let num = 0
     const compareList: number[] = [-1, 0, 1]
+    for (let i = 0; i < bombsList.length; i++) {
+      for (const compareY of compareList) {
+        for (const compareX of compareList) {
+          if (bombsList[i].x === x + compareX && bombsList[i].y === y + compareY) {
+            num++
+          }
+        }
+      }
+    }
+    newBoard[y][x] = num
     if (num === 0) {
-      for (let i = 0; i < bombs.length; i++) {
+      for (let i = 0; i < bombsList.length; i++) {
         for (const boardY of compareList) {
           for (const boardX of compareList) {
             if (
               newBoard[y + boardY] !== undefined &&
               newBoard[x + boardX] !== undefined &&
               newBoard[y + boardY][x + boardX] === 9 &&
-              !(bombs[i].x === x + boardX && bombs[i].y === y + boardY)
+              !(bombsList[i].x === x + boardX && bombsList[i].y === y + boardY)
             ) {
-              newBoard = open(y + boardY, x + boardX, newBoard)
+              newBoard = open(y + boardY, x + boardX, newBoard, bombsList)
             }
           }
         }
       }
     }
-    return newBoard
-  }
-
-  const compare = (y: number, x: number) => {
-    for (let i = 0; i < bombs.length; i++) {
-      if (bombs[i].x === x && bombs[i].y === y) {
-        return 10
-      }
-    }
-    let num = 0
-    const compareList: number[] = [-1, 0, 1]
-    for (let i = 0; i < bombs.length; i++) {
-      for (const compareY of compareList) {
-        for (const compareX of compareList) {
-          if (bombs[i].x === x + compareX && bombs[i].y === y + compareY) {
-            num++
-          }
-        }
-      }
-    }
-    return num
-  }
-
-  const gameClear = () => {
-    setIsPlaying(false)
-    setFace(1)
-    setBombCount(0)
-    setPlayable(false)
-  }
-
-  const gameOver = (y: number, x: number, newBoard: number[][]) => {
-    setIsPlaying(false)
-    setFace(2)
-    setPlayable(false)
-    for (let i = 0; i < bombs.length; i++) {
-      //console.log(i, j)
-      newBoard[bombs[i].y][bombs[i].x] = compare(bombs[i].y, bombs[i].x)
-    }
-    newBoard[y][x] = 11
     return newBoard
   }
 
