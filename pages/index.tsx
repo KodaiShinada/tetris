@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
@@ -408,57 +409,66 @@ const Home: NextPage = () => {
   }
 
   return (
-    <Container>
-      <Board>
-        <GameWrapper>
-          <BoardUp>
-            <CounterL>
-              <Count>{bombCount < -9 ? '-' : 0}</Count>
+    <>
+      <Head>
+        <title>Kodai&apos;s Minesweeper</title>
+        <link
+          rel="icon"
+          href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/310/tangerine_1f34a.png"
+        />
+      </Head>
+      <Container>
+        <Board>
+          <GameWrapper>
+            <BoardUp>
+              <CounterL>
+                <Count>{bombCount < -9 ? '-' : 0}</Count>
 
-              <Count>
-                {bombCount < -9
-                  ? Math.abs(bombCount - (bombCount % 10))
-                  : bombCount < 0
-                  ? '-'
-                  : bombCount - (bombCount % 10)}
-              </Count>
+                <Count>
+                  {bombCount < -9
+                    ? Math.abs(bombCount - (bombCount % 10))
+                    : bombCount < 0
+                    ? '-'
+                    : bombCount - (bombCount % 10)}
+                </Count>
 
-              <Count>{bombCount < 0 ? Math.abs(bombCount % 10) : bombCount % 10}</Count>
-            </CounterL>
-            <FaceWrapper>
-              <Face faceState={face} onClick={() => reset()} />
-            </FaceWrapper>
-            <CounterR>
-              <Count>{((count % 1000) - (count % 100)) / 100}</Count>
+                <Count>{bombCount < 0 ? Math.abs(bombCount % 10) : bombCount % 10}</Count>
+              </CounterL>
+              <FaceWrapper>
+                <Face faceState={face} onClick={() => reset()} />
+              </FaceWrapper>
+              <CounterR>
+                <Count>{((count % 1000) - (count % 100)) / 100}</Count>
 
-              <Count>{((count % 100) - (count % 10)) / 10}</Count>
+                <Count>{((count % 100) - (count % 10)) / 10}</Count>
 
-              <Count>{count % 10}</Count>
-            </CounterR>
-          </BoardUp>
-          <BoardUnder>
-            {board.map((row, y) =>
-              row.map((num, x) =>
-                num === 10 || num === 11 ? (
-                  <Box backColor={num === 10 ? 'silver' : 'red'} key={`${x}-${y}`}>
-                    <BombBlock />
-                  </Box>
-                ) : (
-                  <Box
-                    key={`${x}-${y}`}
-                    backColor={num < 9 ? 'silver' : 'lightgray'}
-                    onClick={() => onClick(y, x)}
-                    onContextMenu={(e) => flag(y, x, e)}
-                  >
-                    {num < 9 ? <Colors numColor={num} /> : num !== 9 && <Flags numColor={num} />}
-                  </Box>
+                <Count>{count % 10}</Count>
+              </CounterR>
+            </BoardUp>
+            <BoardUnder>
+              {board.map((row, y) =>
+                row.map((num, x) =>
+                  num === 10 || num === 11 ? (
+                    <Box backColor={num === 10 ? 'silver' : 'red'} key={`${x}-${y}`}>
+                      <BombBlock />
+                    </Box>
+                  ) : (
+                    <Box
+                      key={`${x}-${y}`}
+                      backColor={num < 9 ? 'silver' : 'lightgray'}
+                      onClick={() => onClick(y, x)}
+                      onContextMenu={(e) => flag(y, x, e)}
+                    >
+                      {num < 9 ? <Colors numColor={num} /> : num !== 9 && <Flags numColor={num} />}
+                    </Box>
+                  )
                 )
-              )
-            )}
-          </BoardUnder>
-        </GameWrapper>
-      </Board>
-    </Container>
+              )}
+            </BoardUnder>
+          </GameWrapper>
+        </Board>
+      </Container>
+    </>
   )
 }
 
