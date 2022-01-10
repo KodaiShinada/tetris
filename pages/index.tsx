@@ -48,9 +48,12 @@ const BoardUp = styled.div`
     height: 10vh;
     width: 55vh;
   }
+<<<<<<< HEAD
   @media screen and (min-width: 481px) {
     height: 17vh;
     width: 74vh;
+=======
+
   }
 `
 
@@ -75,6 +78,7 @@ const FaceWrapper = styled.div`
   }
 `
 
+<<<<<<< HEAD
 const Face = styled.div<{ faceState: number }>`
   background-image: url(img.png);
   background-size: cover;
@@ -100,6 +104,8 @@ const Face = styled.div<{ faceState: number }>`
     width: 90px;
     background-position: ${(props) => (props.faceState + 11) * -90}px 0px;
   }
+=======
+
 `
 
 const CounterL = styled.div`
