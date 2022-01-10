@@ -11,8 +11,6 @@ const Container = styled.div`
 `
 
 const Board = styled.div`
-  height: 95vh;
-  width: 80vh;
   border-top: 5px solid white;
   border-right: 5px solid gray;
   border-bottom: 5px solid gray;
@@ -20,6 +18,14 @@ const Board = styled.div`
   background-color: lightgray;
   display: row;
   position: relative;
+  @media screen and (max-width: 480px) {
+    height: 70vh;
+    width: 60vh;
+  }
+  @media screen and (min-width: 481px) {
+    height: 95vh;
+    width: 80vh;
+  }
 `
 const GameWrapper = styled.div`
   background: white;
@@ -31,8 +37,6 @@ const GameWrapper = styled.div`
 `
 
 const BoardUp = styled.div`
-  height: 17vh;
-  width: 74vh;
   border-top: 7px solid gray;
   border-right: 7px solid white;
   border-bottom: 7px solid white;
@@ -40,9 +44,17 @@ const BoardUp = styled.div`
   background-color: lightgray;
   display: flex;
   position: relative;
+  @media screen and (max-width: 480px) {
+    height: 10vh;
+    width: 55vh;
+  }
+  @media screen and (min-width: 481px) {
+    height: 17vh;
+    width: 74vh;
+  }
 `
 
-const FaceWrapper = styled.div<{ faceState: number }>`
+const FaceWrapper = styled.div`
   height: 90px;
   width: 90px;
   border-top: 5px solid white;
@@ -53,15 +65,20 @@ const FaceWrapper = styled.div<{ faceState: number }>`
   outline: solid 2px gray;
   top: 30;
   margin: auto;
+  @media screen and (max-width: 480px) {
+    height: 45px;
+    width: 45px;
+  }
+  @media screen and (min-width: 481px) {
+    height: 90px;
+    width: 90px;
+  }
 `
 
 const Face = styled.div<{ faceState: number }>`
-  height: 90px;
-  width: 90px;
-  background-image: url(/img.png);
+  background-image: url(img.png);
   background-size: cover;
   //background-position: -990px 0px;
-  background-position: ${(props) => (props.faceState + 11) * -90}px 0px;
   background-repeat: no-repeat;
   display: inline-block;
   white-space: nowrap;
@@ -73,11 +90,19 @@ const Face = styled.div<{ faceState: number }>`
   left: 0;
   right: 0;
   margin: auto;
+  @media screen and (max-width: 480px) {
+    height: 40px;
+    width: 40px;
+    background-position: ${(props) => (props.faceState + 11) * -40}px 0px;
+  }
+  @media screen and (min-width: 481px) {
+    height: 90px;
+    width: 90px;
+    background-position: ${(props) => (props.faceState + 11) * -90}px 0px;
+  }
 `
 
 const CounterL = styled.div`
-  height: 90px;
-  width: 150px;
   background: black;
   border-top: 2px solid gray;
   border-right: 2px solid white;
@@ -87,11 +112,17 @@ const CounterL = styled.div`
   text-align: center;
   left: -15px;
   margin: auto;
+  @media screen and (max-width: 480px) {
+    height: 45px;
+    width: 75px;
+  }
+  @media screen and (min-width: 481px) {
+    height: 90px;
+    width: 150px;
+  }
 `
 
 const CounterR = styled.div`
-  height: 90px;
-  width: 150px;
   background: black;
   border-top: 2px solid gray;
   border-right: 2px solid white;
@@ -100,33 +131,52 @@ const CounterR = styled.div`
   position: relative;
   right: -15px;
   margin: auto;
+  @media screen and (max-width: 480px) {
+    height: 45px;
+    width: 75px;
+  }
+  @media screen and (min-width: 481px) {
+    height: 90px;
+    width: 150px;
+  }
 `
 
 const Count = styled.div`
-  height: 90px;
-  width: 50px;
   color: red;
   position: relative;
-  font-size: 90px;
-  top: -20px;
+  @media screen and (max-width: 480px) {
+    height: 45px;
+    width: 25px;
+    font-size: 45px;
+    top: -11px;
+  }
+  @media screen and (min-width: 481px) {
+    height: 90px;
+    width: 50px;
+    font-size: 90px;
+    top: -20px;
+  }
 `
 
 const BoardUnder = styled.div`
-  height: 74vh;
-  width: 74vh;
-  border-top: 7px solid gray;
-  border-right: 7px solid white;
-  border-bottom: 7px solid white;
-  border-left: 7px solid gray;
+  border-top: 0.5vh solid gray;
+  border-right: 0.5vh solid white;
+  border-bottom: 0.5vh solid white;
+  border-left: 0.5vh solid gray;
   background-color: lightgray;
+  @media screen and (max-width: 480px) {
+    height: 55vh;
+    width: 55vh;
+  }
+  @media screen and (min-width: 481px) {
+    height: 73vh;
+    width: 73vh;
+  }
 `
 
 const Box = styled.div<{ backColor: string }>`
-  height: 8vh;
-  width: 8vh;
   background: ${(props) => props.backColor};
   color: 'black';
-  //border: 1px solid black;
   border-top: ${(props) => (props.backColor === 'lightgray' ? 4 : 1)}px solid
     ${(props) => (props.backColor === 'lightgray' ? 'white' : 'gray')};
   border-left: ${(props) => (props.backColor === 'lightgray' ? 4 : 1)}px solid
@@ -138,14 +188,22 @@ const Box = styled.div<{ backColor: string }>`
   vertical-align: bottom;
   text-align: center;
   line-height: 8.5vh;
-  font-size: 30px;
-  font-weight: bold;
+  @media screen and (max-width: 480px) {
+    height: 6vh;
+    width: 6vh;
+    font-size: 10px;
+  }
+  @media screen and (min-width: 481px) {
+    height: 8vh;
+    width: 8vh;
+    font-size: 30px;
+  }
 `
 
 const BombBlock = styled.div`
   height: 30px;
   width: 30px;
-  background-image: url(/img.png);
+  background-image: url(img.png);
   background-position: -300px 0px;
   background-repeat: no-repeat;
   display: inline-block;
@@ -159,7 +217,7 @@ const BombBlock = styled.div`
 const Colors = styled.div<{ numColor: number }>`
   height: 30px;
   width: 30px;
-  background-image: url(/img.png);
+  background-image: url(img.png);
   background-position: ${(props) => (props.numColor - 1) * -30}px 0px;
   background-repeat: no-repeat;
   display: inline-block;
@@ -173,7 +231,7 @@ const Colors = styled.div<{ numColor: number }>`
 const Flags = styled.div<{ numColor: number }>`
   height: 30px;
   width: 30px;
-  background-image: url(/img.png);
+  background-image: url(img.png);
   background-position: ${(props) => (props.numColor - 4) * -30}px 0px;
   background-repeat: no-repeat;
   display: inline-block;
