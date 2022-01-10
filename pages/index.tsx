@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const Container = styled.div`
   height: 100vh;
-  background: royalblue;
+  background: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,7 +13,11 @@ const Container = styled.div`
 const Board = styled.div`
   height: 95vh;
   width: 80vh;
-  background: black;
+  border-top: 5px solid white;
+  border-right: 5px solid gray;
+  border-bottom: 5px solid gray;
+  border-left: 5px solid white;
+  background-color: lightgray;
   display: row;
   position: relative;
 `
@@ -28,10 +32,27 @@ const GameWrapper = styled.div`
 
 const BoardUp = styled.div`
   height: 17vh;
-  width: 72vh;
-  background: white;
+  width: 74vh;
+  border-top: 7px solid gray;
+  border-right: 7px solid white;
+  border-bottom: 7px solid white;
+  border-left: 7px solid gray;
+  background-color: lightgray;
   display: flex;
   position: relative;
+`
+
+const FaceWrapper = styled.div<{ faceState: number }>`
+  height: 90px;
+  width: 90px;
+  border-top: 5px solid white;
+  border-right: 5px solid gray;
+  border-bottom: 5px solid gray;
+  border-left: 5px solid white;
+  background-color: lightgray;
+  outline: solid 2px gray;
+  top: 30;
+  margin: auto;
 `
 
 const Face = styled.div<{ faceState: number }>`
@@ -54,31 +75,31 @@ const Face = styled.div<{ faceState: number }>`
   margin: auto;
 `
 
-const CounterLWrapper = styled.div`
+const CounterL = styled.div`
   height: 90px;
   width: 150px;
+  background: black;
+  border-top: 2px solid gray;
+  border-right: 2px solid white;
+  border-left: 2px solid gray;
   display: flex;
   position: relative;
   text-align: center;
-  left: -20px;
+  left: -15px;
   margin: auto;
 `
 
-const CounterRWrapper = styled.div`
+const CounterR = styled.div`
   height: 90px;
   width: 150px;
   background: black;
+  border-top: 2px solid gray;
+  border-right: 2px solid white;
+  border-left: 2px solid gray;
   display: flex;
   position: relative;
-  right: -20px;
+  right: -15px;
   margin: auto;
-`
-
-const Counter = styled.div`
-  height: 90px;
-  width: 50px;
-  position: relative;
-  background: black;
 `
 
 const Count = styled.div`
@@ -87,13 +108,17 @@ const Count = styled.div`
   color: red;
   position: relative;
   font-size: 90px;
-  top: -17px;
+  top: -20px;
 `
 
 const BoardUnder = styled.div`
-  height: 72vh;
-  width: 72vh;
-  background: white;
+  height: 74vh;
+  width: 74vh;
+  border-top: 7px solid gray;
+  border-right: 7px solid white;
+  border-bottom: 7px solid white;
+  border-left: 7px solid gray;
+  background-color: lightgray;
 `
 
 const Box = styled.div<{ backColor: string }>`
@@ -101,9 +126,14 @@ const Box = styled.div<{ backColor: string }>`
   width: 8vh;
   background: ${(props) => props.backColor};
   color: 'black';
-  border: 1px solid black;
+  //border: 1px solid black;
+  border-top: ${(props) => (props.backColor === 'lightgray' ? 4 : 1)}px solid
+    ${(props) => (props.backColor === 'lightgray' ? 'white' : 'gray')};
+  border-left: ${(props) => (props.backColor === 'lightgray' ? 4 : 1)}px solid
+    ${(props) => (props.backColor === 'lightgray' ? 'white' : 'gray')};
+  border-right: ${(props) => (props.backColor === 'lightgray' ? 4 : 1)}px solid gray;
+  border-bottom: ${(props) => (props.backColor === 'lightgray' ? 4 : 1)}px solid gray;
   box-sizing: border-box;
-  border-left: transparent;
   display: inline-block;
   vertical-align: bottom;
   text-align: center;
@@ -170,10 +200,9 @@ const Home: NextPage = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const tmpBombs: { y: number; x: number }[] = []
   //爆弾数
-  const numberOfBombs = 80
+  const numberOfBombs = 10
   const [bombs, setBombs] = useState(tmpBombs)
   const [playable, setPlayable] = useState(true)
-  //console.log(bombs)
   const [bombCount, setBombCount] = useState(numberOfBombs)
 
   const [face, setFace] = useState(0)
@@ -193,7 +222,6 @@ const Home: NextPage = () => {
 
   const onClick = (y: number, x: number) => {
     if (!isPlaying && playable) {
-      //console.log(y, x)
       setIsPlaying(true)
       const bombsList: { y: number; x: number }[] = []
       while (bombsList.length < numberOfBombs) {
@@ -204,7 +232,6 @@ const Home: NextPage = () => {
         }
       }
       setBombs(bombsList)
-      console.log(bombs)
       update(y, x, bombsList)
     } else if (isPlaying) {
       const bombsList: { y: number; x: number }[] = bombs
@@ -317,7 +344,6 @@ const Home: NextPage = () => {
       }).length
     }
     setBombCount(numberOfBombs - flagCount)
-    console.log(bombCount)
 
     e.preventDefault()
     setBoard(newBoard)
@@ -328,47 +354,41 @@ const Home: NextPage = () => {
       <Board>
         <GameWrapper>
           <BoardUp>
-            <CounterLWrapper>
-              <Counter>
-                <Count>{bombCount < -9 ? '-' : 0}</Count>
-              </Counter>
-              <Counter>
-                <Count>
-                  {bombCount < -9
-                    ? Math.abs(bombCount - (bombCount % 10))
-                    : bombCount < 0
-                    ? '-'
-                    : bombCount - (bombCount % 10)}
-                </Count>
-              </Counter>
-              <Counter>
-                <Count>{bombCount < 0 ? Math.abs(bombCount % 10) : bombCount % 10}</Count>
-              </Counter>
-            </CounterLWrapper>
-            <Face faceState={face} onClick={() => reset()} />
-            <CounterRWrapper>
-              <Counter>
-                <Count>{(count % 1000) - (count % 100)}</Count>
-              </Counter>
-              <Counter>
-                <Count>{(count % 100) - (count % 10)}</Count>
-              </Counter>
-              <Counter>
-                <Count>{count % 10}</Count>
-              </Counter>
-            </CounterRWrapper>
+            <CounterL>
+              <Count>{bombCount < -9 ? '-' : 0}</Count>
+
+              <Count>
+                {bombCount < -9
+                  ? Math.abs(bombCount - (bombCount % 10))
+                  : bombCount < 0
+                  ? '-'
+                  : bombCount - (bombCount % 10)}
+              </Count>
+
+              <Count>{bombCount < 0 ? Math.abs(bombCount % 10) : bombCount % 10}</Count>
+            </CounterL>
+            <FaceWrapper>
+              <Face faceState={face} onClick={() => reset()} />
+            </FaceWrapper>
+            <CounterR>
+              <Count>{((count % 1000) - (count % 100)) / 100}</Count>
+
+              <Count>{((count % 100) - (count % 10)) / 10}</Count>
+
+              <Count>{count % 10}</Count>
+            </CounterR>
           </BoardUp>
           <BoardUnder>
             {board.map((row, y) =>
               row.map((num, x) =>
                 num === 10 || num === 11 ? (
-                  <Box backColor={num === 10 ? 'white' : 'red'} key={`${x}-${y}`}>
+                  <Box backColor={num === 10 ? 'silver' : 'red'} key={`${x}-${y}`}>
                     <BombBlock />
                   </Box>
                 ) : (
                   <Box
                     key={`${x}-${y}`}
-                    backColor={num < 9 ? 'white' : 'gray'}
+                    backColor={num < 9 ? 'silver' : 'lightgray'}
                     onClick={() => onClick(y, x)}
                     onContextMenu={(e) => flag(y, x, e)}
                   >
