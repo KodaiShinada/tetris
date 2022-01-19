@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 const COLORS = ['blue', 'red']
@@ -64,6 +64,7 @@ const Home: NextPage = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ])
   const initialMino = {
     left: 1,
@@ -87,9 +88,11 @@ const Home: NextPage = () => {
     return newBoard
   }, [])
 
+  /*
   const countup = () => {
     setCount((count) => count + 1)
   }
+
 
   useEffect(() => {
     if (isPlaying) {
@@ -97,6 +100,7 @@ const Home: NextPage = () => {
       return () => clearInterval(isPlayingId)
     }
   }, [isPlaying])
+  */
 
   return (
     <>
